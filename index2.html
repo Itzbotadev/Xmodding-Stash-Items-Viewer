@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xmodding Stash Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e1e;
+      color: #ffffff;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ffaa;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      background: #2e2e2e;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #00ffaa;
+      border: none;
+      cursor: pointer;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      background: #333;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-left: 5px solid #00ffaa;
+    }
+    .item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 15px;
+      object-fit: cover;
+      background: #555;
+    }
+    .item-info {
+      display: flex;
+      flex-direction: column;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>Xmodding Stash Bot Viewer</h1>
+  <p>Paste your Animal Company stash JSON below:</p>
+  <textarea id="jsonInput"></textarea>
+  <button onclick="parseJson()">View Stash</button>
+  <h2>Parsed Output:</h2>
+  <div id="output"></div>
+  <div>
+    <footer>
+        &copy; 2025 Xmodding - Created By Null!
+      </footer>
+  </div>
+
+  <script>
+    function getItemImage(itemID) {
+      // You can update this function with actual paths to item icons
+      return `https://drive.google.com/file/d/1RkzXuMrQouRBZu6cFGDBevY8zh3iZRPp/view?usp=drive_link`;
+    }
+
+    function parseJson() {
+      const input = document.getElementById('jsonInput').value;
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+
+      try {
+        const data = JSON.parse(input);
+        if (data.leftHand) {
+          const leftItem = document.createElement('div');
+          leftItem.classList.add('item');
+          leftItem.innerHTML = `
+            <img src="${getItemImage(data.leftHand.itemID)}" alt="${data.leftHand.itemID}">
+            <div class="item-info">
+              <strong>Left Hand:</strong> ${data.leftHand.itemID}
+            </div>
+          `;
+          output.appendChild(leftItem);
+
+          if (data.leftHand.children) {
+            data.leftHand.children.forEach((child, index) => {
+              const childEl = document.createElement('div');
+              childEl.classList.add('item');
+              childEl.innerHTML = `
+                <img src="${getItemImage(child.itemID)}" alt="${child.itemID}">
+                <div class="item-info">
+                  <strong>Child ${index + 1}:</strong><br>
+                  Item ID: ${child.itemID}<br>
+                  Color Hue: ${child.colorHue}<br>
+                  Saturation: ${child.colorSaturation}<br>
+                  Scale Modifier: ${child.scaleModifier}<br>
+                  State: ${child.state}
+                </div>
+              `;
+              output.appendChild(childEl);
+            });
+          }
+        } else {
+          output.innerHTML = 'No leftHand data found.';
+        }
+      } catch (e) {
+        output.innerHTML = 'Invalid JSON input.';
+      }
+    }
+  </script>
+</body>
+</html>
